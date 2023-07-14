@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="pioneer_gimbal"
+  xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="gimbal_camera_transfrom">
+    <origin xyz="0.14687 0 0.03654" rpy="0 -0.04 0" />
+  </xacro:property>
+
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1" />
+  </material>
+
+  <link name="odom" />
+
+  <link name="yaw_link" />
+
+  <joint name="yaw_joint" type="continuous">
+    <parent link="odom" />
+    <child link="yaw_link" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <link name="pitch_link">
+    <visual>
+      <origin xyz="0 0.0752 0" rpy="0 0 ${-pi/2}" />
+      <geometry>
+        <mesh filename="package://rm_pioneer_gimbal_description/meshes/pitch_link.dae" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="pitch_joint" type="revolute">
+    <parent link="yaw_link" />
+    <child link="pitch_link" />
+    <axis xyz="0 1 0" />
+    <limit lower="-0.43633" upper="0.61087" effort="0" velocity="0" />
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rm_pioneer_gimbal_description/meshes/camera_link.STL" />
+      </geometry>
+      <material name="black" />
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <xacro:insert_block name="gimbal_camera_transfrom" />
+    <parent link="pitch_link" />
+    <child link="camera_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+  <link name="camera_optical_frame" />
+
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+    <parent link="camera_link" />
+    <child link="camera_optical_frame" />
+  </joint>
+
+</robot>
